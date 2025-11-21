@@ -18,32 +18,43 @@ To convert a given infix expression to a postfix expression using a stack.
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
+
 #define MAX 100
+
 char stack[MAX];
 int top = -1;
+
+// Check if stack is empty
 int isEmpty() {
     return top == -1;
 }
+
+// Push character onto stack
 void push(char item) {
     if (top >= MAX - 1) {
-        printf("stack overflow\n");
+        printf("Stack overflow\n");
         return;
     }
     stack[++top] = item;
 }
 
+// Pop character from stack
 char pop() {
     if (isEmpty()) {
-        printf("stack underflow\n");
+        printf("Stack underflow\n");
         return -1;
     }
     return stack[top--];
 }
+
+// Peek top element of stack
 char peek() {
     if (isEmpty())
         return -1;
     return stack[top];
 }
+
+// Return precedence of operator
 int precedence(char item) {
     if (item == '^')
         return 3;
@@ -54,34 +65,43 @@ int precedence(char item) {
     else
         return 0;
 }
+
 int main() {
     char infix[MAX], postfix[MAX];
     int i, k = 0;
     char ch, temp;
-    printf("Enter in-fix Expression: ");
+
+    printf("Enter Infix Expression: ");
     scanf("%s", infix);
+
     for (i = 0; i < strlen(infix); i++) {
         ch = infix[i];
-        if (isalnum(ch)) {
+
+        if (isalnum(ch)) {  // Operand
             postfix[k++] = ch;
         }
-        else if (ch == '(') {
+        else if (ch == '(') {  // Left parenthesis
             push(ch);
         }
-        else if (ch == ')') {
+        else if (ch == ')') {  // Right parenthesis
             while (!isEmpty() && (temp = pop()) != '(')
                 postfix[k++] = temp;
         }
-        else {
+        else {  // Operator
             while (!isEmpty() && precedence(peek()) >= precedence(ch))
                 postfix[k++] = pop();
             push(ch);
         }
     }
+
+    // Pop remaining operators from stack
     while (!isEmpty())
         postfix[k++] = pop();
-    postfix[k] = '\0';
-    printf("Postfix expression: %s\n", postfix);
+
+    postfix[k] = '\0'; // Null-terminate the postfix string
+
+    printf("Postfix Expression: %s\n", postfix);
+
     return 0;
 }
 
