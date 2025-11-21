@@ -23,21 +23,24 @@ Algorithm:
 Program:
 #include <stdio.h>
 #include <stdlib.h>
+
+// Node structure for Doubly Linked List
 struct DNode {
     int data;
     struct DNode *prev;
     struct DNode *next;
 };
+
+// Create a new node
 struct DNode* CreateNode(int data) {
     struct DNode* newNode = (struct DNode*)malloc(sizeof(struct DNode));
-    if (!newNode) {
-        printf("Memory allocation failed!\n");
-        return NULL;
-    }
+    if (!newNode) { printf("Memory allocation failed!\n"); return NULL; }
     newNode->data = data;
     newNode->prev = newNode->next = NULL;
     return newNode;
 }
+
+// Insert at beginning
 void InsertAtBeginning(struct DNode **head, int data) {
     struct DNode *newNode = CreateNode(data);
     if (!newNode) return;
@@ -46,25 +49,28 @@ void InsertAtBeginning(struct DNode **head, int data) {
     *head = newNode;
     printf("Inserted %d at beginning.\n", data);
 }
+
+// Insert at end
 void InsertAtEnd(struct DNode **head, int data) {
     struct DNode *newNode = CreateNode(data);
     if (!newNode) return;
-    if (*head == NULL) {
-        *head = newNode;
-    } else {
+    if (*head == NULL) *head = newNode;
+    else {
         struct DNode *temp = *head;
-        while (temp->next != NULL) temp = temp->next;
+        while (temp->next) temp = temp->next;
         temp->next = newNode;
         newNode->prev = temp;
     }
     printf("Inserted %d at end.\n", data);
 }
+
+// Insert at specific position
 void InsertAtPosition(struct DNode **head, int data, int pos) {
     if (pos < 1) { printf("Invalid position!\n"); return; }
     if (pos == 1) { InsertAtBeginning(head, data); return; }
     struct DNode *temp = *head;
-    for (int i = 1; i < pos - 1 && temp != NULL; ++i) temp = temp->next;
-    if (temp == NULL) { printf("Position out of range!\n"); return; }
+    for (int i = 1; i < pos - 1 && temp; ++i) temp = temp->next;
+    if (!temp) { printf("Position out of range!\n"); return; }
     struct DNode *newNode = CreateNode(data);
     if (!newNode) return;
     newNode->next = temp->next;
@@ -73,28 +79,33 @@ void InsertAtPosition(struct DNode **head, int data, int pos) {
     if (newNode->next) newNode->next->prev = newNode;
     printf("Inserted %d at position %d.\n", data, pos);
 }
+
+// Delete node by value
 void DeleteByValue(struct DNode **head, int value) {
-    if (*head == NULL) { printf("List is empty. Cannot delete.\n"); return; }
+    if (!*head) { printf("List is empty. Cannot delete.\n"); return; }
     struct DNode *temp = *head;
-    while (temp != NULL && temp->data != value) temp = temp->next;
-    if (temp == NULL) { printf("Element %d not found.\n", value); return; }
+    while (temp && temp->data != value) temp = temp->next;
+    if (!temp) { printf("Element %d not found.\n", value); return; }
     if (temp->prev) temp->prev->next = temp->next;
-    else *head = temp->next; 
+    else *head = temp->next;
     if (temp->next) temp->next->prev = temp->prev;
     free(temp);
     printf("Deleted %d from list.\n", value);
 }
+
+// Display list forward
 void DisplayForward(struct DNode *head) {
     if (!head) { printf("List is empty.\n"); return; }
     printf("Forward: ");
     struct DNode *temp = head;
     while (temp) {
         printf("%d <-> ", temp->data);
-        if (temp->next == NULL) break;
         temp = temp->next;
     }
     printf("NULL\n");
 }
+
+// Display list backward
 void DisplayBackward(struct DNode *head) {
     if (!head) { printf("List is empty.\n"); return; }
     struct DNode *tail = head;
@@ -106,14 +117,19 @@ void DisplayBackward(struct DNode *head) {
     }
     printf("NULL\n");
 }
+
+// Main menu-driven program
 int main() {
     struct DNode *head = NULL;
     int choice, data, pos;
+
     while (1) {
         printf("\n--- Doubly Linked List Menu ---\n");
-        printf("1. Insert at Beginning\n2. Insert at End\n3. Insert at Position\n4. Delete by Value\n5. Display Forward\n6. Display Backward\n7. Exit\n");
+        printf("1. Insert at Beginning\n2. Insert at End\n3. Insert at Position\n4. Delete by Value\n");
+        printf("5. Display Forward\n6. Display Backward\n7. Exit\n");
         printf("Enter choice: ");
         if (scanf("%d", &choice) != 1) break;
+
         switch (choice) {
             case 1:
                 printf("Enter data: "); scanf("%d", &data);
