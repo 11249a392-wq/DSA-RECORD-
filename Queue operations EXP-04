@@ -21,44 +21,80 @@ To implement a queue using an array and perform enqueue (insertion) and dequeue 
 
 **Program:**
 #include <stdio.h>
-#define SIZE 5
-int queue[SIZE];
+#define MAX 5
+
+int queue[MAX];
 int front = -1, rear = -1;
+
+// Enqueue operation
 void enqueue(int item) {
-    if (rear == SIZE - 1) {
-        printf("Queue overflow!\n");
-        return;
-    }
-    if (front == -1)
-        front = 0;
-    rear++;
-    queue[rear] = item;
-    printf("Item inserted Successfully: %d\n", item);
-}
-void dequeue() {
-    int item;
-    if (front == -1) {
-        printf("Queue underflow!\n");
-        return;
-    }
-    item = queue[front];
-    if (front == rear) {
-        front = rear = -1;
+    if (rear == MAX - 1) {
+        printf("Queue Overflow\n");
     } else {
-        front++;
+        if (front == -1)
+            front = 0;
+        rear++;
+        queue[rear] = item;
+        printf("%d inserted into the queue.\n", item);
     }
-    printf("Deleted item: %d\n", item);
-}
-int main() {
-    enqueue(10);
-    enqueue(20);
-    enqueue(30);
-    enqueue(40);
-    dequeue();
-    dequeue();
-    return 0;
 }
 
+// Dequeue operation
+void dequeue() {
+    if (front == -1 || front > rear) {
+        printf("Queue Underflow\n");
+    } else {
+        printf("%d deleted from the queue.\n", queue[front]);
+        front++;
+    }
+}
+
+// Display queue elements
+void display() {
+    if (front == -1 || front > rear) {
+        printf("Queue is Empty\n");
+    } else {
+        printf("Queue elements are: ");
+        for (int i = front; i <= rear; i++)
+            printf("%d ", queue[i]);
+        printf("\n");
+    }
+}
+
+// Main function
+int main() {
+    int choice, item;
+    do {
+        printf("\n--- Queue Operations ---\n");
+        printf("1. Insert (Enqueue)\n");
+        printf("2. Delete (Dequeue)\n");
+        printf("3. Display\n");
+        printf("4. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Enter element to insert: ");
+                scanf("%d", &item);
+                enqueue(item);
+                break;
+            case 2:
+                dequeue();
+                break;
+            case 3:
+                display();
+                break;
+            case 4:
+                printf("Exiting...\n");
+                break;
+            default:
+                printf("Invalid choice!\n");
+        }
+    } while (choice != 4);
+
+    return 0;
+}
 **Output:**
 Item inserted Successfully: 10
 Item inserted Successfully: 20
