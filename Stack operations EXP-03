@@ -25,44 +25,63 @@ To implement a stack using an array in C and perform push and pop operations.
 
 **Program:**
 #include <stdio.h>
-int main() {
-    int TOP = -1, choice = 0;
-    int MAX, item;
-    printf("Enter the stack size: ");
-    scanf("%d", &MAX);
-    int stack[MAX];
-    while (choice != 3) {
-        printf("\n1. push\n2. pop\n3. exit\n");
-        printf("choose your option: ");
-        scanf("%d", &choice);
-        switch (choice) {
-            case 1:
-                if (TOP == MAX - 1) {
-                    printf("stack is overflown\n");
-                } else {
-                    printf("Enter the value to push: ");
-                    scanf("%d", &item);
-                    TOP = TOP + 1;
-                    stack[TOP] = item;
-                }
-                break;
-            case 2:
-                if (TOP == -1) {
-                    printf("stack underflow\n");
-                } else {
-                    item = stack[TOP];
-                    TOP = TOP - 1;
-                    printf("popped element is %d\n", item);
-                }
-                break;
-            case 3:
-                printf("Exiting...\n");
-                break;
-            default:
-                printf("Incorrect choice\n");
-                break;
-        }
+#include <stdlib.h>
+
+#define MAX 100
+
+int Top = -1;
+char STACK[MAX];
+
+// Function to push an item onto the stack
+void push(char item) {
+    if (Top == MAX - 1) {
+        printf("Stack overflow\n");
+    } else {
+        Top = Top + 1;
+        STACK[Top] = item;
     }
+}
+
+// Function to pop an item from the stack
+char pop() {
+    char item;
+    if (Top == -1) {
+        printf("Stack underflow/empty\n");
+        return '\0';  // Return null character if stack is empty
+    } else {
+        item = STACK[Top];
+        Top = Top - 1;
+        return item;
+    }
+}
+
+// Function to reverse a string using the stack
+void stringReversal() {
+    char string[MAX];
+    int size;
+
+    printf("Enter the size of the string: ");
+    scanf("%d", &size);
+
+    printf("Please enter string to reverse: ");
+    scanf("%s", string);
+
+    // Push each character of the string onto the stack
+    for (int C = 0; C < size && string[C] != '\0'; C++) {
+        push(string[C]);
+    }
+
+    printf("Reversed string: ");
+
+    // Pop characters from the stack to print them in reverse
+    for (int C = 0; C < size; C++) {
+        printf("%c", pop());
+    }
+    printf("\n");
+}
+
+int main() {
+    stringReversal();
     return 0;
 }
 
