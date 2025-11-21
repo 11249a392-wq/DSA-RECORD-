@@ -22,132 +22,138 @@ Algorithm:
 Program:
 #include <stdio.h>
 #include <stdlib.h>
+
+// Node structure
 struct Node {
     int data;
     struct Node *next;
 };
-struct Node *CreateNode(int data) {
-    struct Node *newNode = (struct Node *)malloc(sizeof(struct Node));
-    if (!newNode) {
-        printf("Memory allocation failed!\n");
-        return NULL;
-    }
-    newNode->data = data;
+
+// Function to create a new node
+struct Node* createNode(int value) {
+    struct Node *newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = value;
     newNode->next = NULL;
     return newNode;
 }
-void InsertAtBeginning(struct Node **head, int data) {
-    struct Node *newNode = CreateNode(data);
-    if (!newNode) return;
-    newNode->next = *head;
-    *head = newNode;
-    printf("Inserted %d at beginning.\n", data);
-}
-void InsertAtEnd(struct Node **head, int data) {
-    struct Node *newNode = CreateNode(data);
-    if (!newNode) return;
+
+// Insert node at the end
+void insertAtEnd(struct Node **head, int value) {
+    struct Node *newNode = createNode(value);
+
     if (*head == NULL) {
         *head = newNode;
-    } else {
-        struct Node *temp = *head;
-        while (temp->next != NULL) temp = temp->next;
-        temp->next = newNode;
-    }
-    printf("Inserted %d at end.\n", data);
-}
-void InsertAtPosition(struct Node **head, int data, int pos) {
-    if (pos < 1) {
-        printf("Invalid position!\n");
         return;
     }
-    if (pos == 1) {
-        InsertAtBeginning(head, data);
-        return;
-    }
-    struct Node *prev = *head;
-    for (int i = 1; i < pos - 1 && prev != NULL; ++i) prev = prev->next;
-    if (prev == NULL) {
-        printf("Position out of range!\n");
-        return;
-    }
-    struct Node *newNode = CreateNode(data);
-    if (!newNode) return;
-    newNode->next = prev->next;
-    prev->next = newNode;
-    printf("Inserted %d at position %d.\n", data, pos);
-}
-void DeleteNode(struct Node **head, int value) {
-    if (*head == NULL) {
-        printf("List is empty. Cannot delete.\n");
-        return;
-    }
+
     struct Node *temp = *head;
-    if (temp->data == value) {
-        *head = temp->next;
-        free(temp);
-        printf("Deleted %d from list.\n", value);
-        return;
+    while (temp->next != NULL) {
+        temp = temp->next;
     }
-    struct Node *prev = *head;
-    while (prev->next != NULL && prev->next->data != value) prev = prev->next;
-    if (prev->next == NULL) {
-        printf("Element %d not found.\n", value);
-        return;
-    }
-    temp = prev->next;
-    prev->next = temp->next;
-    free(temp);
-    printf("Deleted %d from list.\n", value);
+    temp->next = newNode;
 }
-void DisplayList(struct Node *head) {
-    if (head == NULL) {
-        printf("List is empty.\n");
-        return;
-    }
+
+// Display linked list
+void display(struct Node *head) {
+    struct Node *temp = head;
     printf("Linked List: ");
-    for (struct Node *p = head; p != NULL; p = p->next) {
-        printf("%d -> ", p->data);
+    while (temp != NULL) {
+        printf("%d -> ", temp->data);
+        temp = temp->next;
     }
     printf("NULL\n");
 }
+
+// Delete node at beginning
+void deleteAtBeginning(struct Node **head) {
+    if (*head == NULL) {
+        printf("List is empty. Nothing to delete.\n");
+        return;
+    }
+
+    struct Node *temp = *head;
+    *head = (*head)->next;
+    free(temp);
+    printf("Deleted node from beginning.\n");
+}
+
+// Delete node at end
+void deleteAtEnd(struct Node **head) {
+    if (*head == NULL) {
+        printf("List is empty. Nothing to delete.\n");
+        return;
+    }
+
+    if ((*head)->next == NULL) {
+        free(*head);
+        *head = NULL;
+        printf("Deleted last node.\n");
+        return;
+    }
+
+    struct Node *temp = *head;
+    while (temp->next->next != NULL) {
+        temp = temp->next;
+    }
+
+    free(temp->next);
+    temp->next = NULL;
+    printf("Deleted node from end.\n");
+}
+
+// Delete node at a specific position
+void deleteAtPosition(struct Node **head, int position) {
+    if (*head == NULL) {
+        printf("List is empty. Nothing to delete.\n");
+        return;
+    }
+
+    if (position == 1) {
+        deleteAtBeginning(head);
+        return;
+    }
+
+    struct Node *temp = *head;
+    for (int i = 1; temp != NULL && i < position - 1; i++) {
+        temp = temp->next;
+    }
+
+    if (temp == NULL || temp->next == NULL) {
+        printf("Invalid position.\n");
+        return;
+    }
+
+    struct Node *nodeToDelete = temp->next;
+    temp->next = nodeToDelete->next;
+    free(nodeToDelete);
+    printf("Deleted node at position %d.\n", position);
+}
+
+// Main function to test
 int main() {
     struct Node *head = NULL;
-    int choice, data, pos;
-    while (1) {
-        printf("\n--- Singly Linked List Menu ---\n");
-        printf("1. Insert at Beginning\n2. Insert at End\n3. Insert at Position\n4. Delete by Value\n5. Display List\n6. Exit\n");
-        printf("Enter choice: ");
-        if (scanf("%d", &choice) != 1) break;
-        switch (choice) {
-            case 1:
-                printf("Enter data: "); scanf("%d", &data);
-                InsertAtBeginning(&head, data); break;
-            case 2:
-                printf("Enter data: "); scanf("%d", &data);
-                InsertAtEnd(&head, data); break;
-            case 3:
-                printf("Enter data and position: "); scanf("%d %d", &data, &pos);
-                InsertAtPosition(&head, data, pos); break;
-            case 4:
-                printf("Enter value to delete: "); scanf("%d", &data);
-                DeleteNode(&head, data); break;
-            case 5:
-                DisplayList(head); break;
-            case 6:
-                printf("Exiting...\n");
-                // free all nodes
-                while (head) {
-                    struct Node *t = head;
-                    head = head->next;
-                    free(t);
-                }
-                exit(0);
-            default:
-                printf("Invalid choice.\n");
-        }
-    }
+
+    // Insert nodes
+    insertAtEnd(&head, 10);
+    insertAtEnd(&head, 20);
+    insertAtEnd(&head, 30);
+    insertAtEnd(&head, 40);
+
+    display(head);
+
+    // Delete operations
+    deleteAtBeginning(&head);
+    display(head);
+
+    deleteAtEnd(&head);
+    display(head);
+
+    deleteAtPosition(&head, 2);
+    display(head);
+
     return 0;
 }
+
 
 Sample Output:
 --- Singly Linked List Menu ---
